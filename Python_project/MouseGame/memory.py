@@ -52,13 +52,54 @@ class Memory:
         return -1
 
     def chooseBestAction(self):
-        if self.currentNode is None or len(self.currentNode.childs)<10:
+        if self.currentNode is None or len(self.currentNode.childs)<9:
+            print("aleatoire")
             return randint(0,5)
         else:
-            max=-1000000;
-            actionMax=-1;
-            for i in range(len(self.currentNode.childs)):
-                if(self.currentNode.childs[i].value>max):
-                    max=self.currentNode.childs[i].value
-                    actionMax= self.currentNode.childs[i].action
-            return actionMax
+            print("dijkstra")
+            return self.dijkstra(self.currentNode)
+
+    def initDijkstra(self, nodeDepart):
+        self.tabDistance= [-1000000] * len(self.nodes)
+        nodeIndex= self.getMemoryIndex(nodeDepart)
+        self.tabDistance[nodeIndex]=0
+
+    def searchBestNode(self, listNodesIndex):
+        max= -1000000
+        nodeMax= None
+        for i in listNodesIndex:
+            if self.tabDistance[i] > max:
+                max= self.tabDistance[i]
+                nodeMax= i
+        return nodeMax
+    
+    def updateDistance(self, node1, node2):
+        indexNode1= self.getMemoryIndex(node1)
+        indexNode2= self.getMemoryIndex(node2)
+        if self.tabDistance[indexNode2] < self.tabDistance[indexNode1] + node2.value:
+            self.tabDistance[indexNode2]= self.tabDistance[indexNode1] + node2.value
+
+    def dijkstra(self, nodeDepart):
+        self.initDijkstra(nodeDepart)
+        nodes=[]
+        for i in range(len(self.nodes)):
+            nodes.append(i)
+        while len(nodes)>0 :
+            index1= self.searchBestNode(nodes)
+            nodes.remove(index1)
+            s1= self.nodes[index1]
+            for s2 in s1.childs:
+                self.updateDistance(s1, s2)
+        return self.nodes[self.getPath()].action
+    
+    def getPath(self):
+        path= []
+        max=-1000000
+        for i in range(len(self.tabDistance)):
+            if self.tabDistance[i] > max:
+                path= []
+                max= self.tabDistance[i]
+                path.append(i)
+            elif max == self.tabDistance[i]:
+                path.append(i)
+        return path[randint(0, len(path)-1)]

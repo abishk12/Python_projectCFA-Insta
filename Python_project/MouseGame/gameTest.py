@@ -1,3 +1,4 @@
+import imp
 from tkinter import *
 from PIL import ImageTk
 from PIL import Image
@@ -6,6 +7,9 @@ from mouse import Mouse
 import _thread
 from random import randint
 from time import sleep
+from memory import Memory, Node
+actionNames= ["forward", "turnLeft", "turnRight", "touchFront", "touchLeft", "touchRight"]
+
 
 class Game:
 
@@ -19,6 +23,7 @@ class Game:
         self.canvas.pack()
         self.createWalls()
         self.mouse= Mouse()
+        self.memory = Memory()
         self.speed= 0.10
         self.score = 0
         self.draw()
@@ -42,8 +47,8 @@ class Game:
 
     def draw(self):
         for i in range(len(self.walls)):
-           self.walls[i].draw(self.canvas)
-        self.canvasMouse= self.mouse.draw(self.canvas)
+            self.walls[i].draw(self.canvas)
+            self.canvasMouse= self.mouse.draw(self.canvas)
 
     
     def isColision(self):
@@ -105,17 +110,17 @@ class Game:
             else: 
                 return -5    
     
-    def chooseBestAction(self):
-        return randint(0,5)    
         
     def animation(self):
         while(True):
             sleep(self.speed)
-            action = self.chooseBestAction()
+            action = self.memory.chooseBestAction()
             result = self.doAction(action)
-            print(action, result)
+            self.memory.update(Node(action, result))
             self.score+=result
-            print(self.score)
+            print("memory size",self.memory.size())
+
+            print(actionNames[action], result, self.score)
             
 if __name__ == "__main__":
     Game()
