@@ -6,7 +6,7 @@ class Mouse:
     def __init__(self):
         self.image= Image.open("./mouse.jpg")
         self.image=  self.image.resize((48,48))
-        self.rotation= 0
+        self.rotation= -90
         self.coordX= 51
         self.coordY= 51
         self.speed= 25

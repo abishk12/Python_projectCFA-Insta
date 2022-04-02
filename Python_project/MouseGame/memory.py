@@ -31,7 +31,7 @@ class Memory:
         return size
 
     def update(self, node):
-        if self.bestNode is None or node.value > self.bestNode.value  :
+        if (self.bestNode is None or node.value > self.bestNode.value):
             self.bestNode= node
         if self.currentNode is None:
             self.currentNode= node
@@ -52,7 +52,7 @@ class Memory:
         return -1
 
     def chooseBestAction(self):
-        if self.currentNode is None or len(self.currentNode.childs)<9:
+        if (self.currentNode is None or len(self.currentNode.childs)<9):
             print("aleatoire")
             return randint(0,5)
         else:

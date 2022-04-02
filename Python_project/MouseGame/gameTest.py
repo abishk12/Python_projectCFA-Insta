@@ -1,14 +1,9 @@
-import imp
-from tkinter import *
-from PIL import ImageTk
-from PIL import Image
-from  wall import Wall
-from mouse import Mouse
-import _thread
 from random import randint
 from time import sleep
-from memory import Memory, Node
-actionNames= ["forward", "turnLeft", "turnRight", "touchFront", "touchLeft", "touchRight"]
+from tkinter import *
+from wall import Wall
+from mouse import Mouse
+import _thread
 
 
 class Game:
@@ -24,7 +19,7 @@ class Game:
         self.createWalls()
         self.mouse= Mouse()
         self.memory = Memory()
-        self.speed= 0.10
+        self.speed= 0.001
         self.score = 0
         self.draw()
         _thread.start_new_thread(self.animation, ())
@@ -72,55 +67,62 @@ class Game:
         self.canvas.delete(self.canvasMouse)
         self.drawMouse()
 
-    def doAction(self, numAction):
-        oldCoord= (self.mouse.coordX, self.mouse.coordY)
-        if numAction ==0:
-            self.mouse.forward()
-        if numAction ==1:
-            self.mouse.turnLeft()   
-        if numAction ==2:
-            self.mouse.turnRight()
-        if numAction ==3:
-            self.mouse.touchFront()
-        if numAction ==4:
-            self.mouse.turnLeft()   
-        if numAction ==5:
-            self.mouse.turnRight()
+        # def doAction(self, numAction):
+        # oldCoord= (self.mouse.coordX, self.mouse.coordY)
+        # if numAction ==0:
+        #     self.mouse.forward()
+        # if numAction ==1:
+        #     self.mouse.turnLeft()   
+        # if numAction ==2:
+        #     self.mouse.turnRight()
+        # if numAction ==3:
+        #     self.mouse.touchFront()
+        # if numAction ==4:
+        #     self.mouse.turnLeft()   
+        # if numAction ==5:
+        #     self.mouse.turnRight()
 
-        collsion = self.isColision()
-        if collsion or numAction:
-            self.mouse.coordX = oldCoord[0]
-            self.mouse.coordY = oldCoord[1]
+        # collsion = self.isColision()
+        # if collsion or numAction:
+        #     self.mouse.coordX = oldCoord[0]
+        #     self.mouse.coordY = oldCoord[1]
        
-        self.canvas.delete(self.canvasMouse)
-        self.canvasMouse = self.mouse.draw(self.canvas)
-        return self.performance(numAction, collsion)
+        # self.canvas.delete(self.canvasMouse)
+        # self.canvasMouse = self.mouse.draw(self.canvas)
+        # return self.performance(numAction, collsion)
 
-    def performance(self,numAction, collision):
-        if numAction == 0:
-            if collision:
-                return -200
-            else: 
-                return 100
-        elif numAction == 1 or numAction == 2:
-            return -20
-        else:
-            if collision:
-                return -10
-            else: 
-                return -5    
+    # def performance(self,numAction, collision):
+    #     if numAction == 0:
+    #         if collision:
+    #             return -200
+    #         else: 
+    #             return 100
+    #     elif numAction == 1 or numAction == 2:
+    #         return -20
+    #     else:
+    #         if collision:
+    #             return -10
+    #         else: 
+    #             return -5    
     
         
     def animation(self):
         while(True):
             sleep(self.speed)
-            action = self.memory.chooseBestAction()
-            result = self.doAction(action)
-            self.memory.update(Node(action, result))
-            self.score+=result
-            print("memory size",self.memory.size())
-
-            print(actionNames[action], result, self.score)
+            oldCoord= (self.mouse.coordX, self.mouse.coordY)
+            numRandom= randint(0, 2)
+            if numRandom==0:
+                self.mouse.forward()
+            elif numRandom==1:
+                self.mouse.turnLeft()
+            elif numRandom==2:
+                self.mouse.turnRight()
+        
+            if self.isColision():
+                self.mouse.coordX= oldCoord[0]
+                self.mouse.coordY= oldCoord[1]
+            self.canvas.delete(self.canvasMouse)
+            self.canvasMouse= self.mouse.draw(self.canvas)
             
 if __name__ == "__main__":
     Game()
