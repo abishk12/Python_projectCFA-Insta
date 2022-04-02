@@ -18,9 +18,7 @@ class Game:
         self.canvas.pack()
         self.createWalls()
         self.mouse= Mouse()
-        self.memory = Memory()
         self.speed= 0.001
-        self.score = 0
         self.draw()
         _thread.start_new_thread(self.animation, ())
         self.root.mainloop()
