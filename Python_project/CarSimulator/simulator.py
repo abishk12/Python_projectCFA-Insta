@@ -1,14 +1,16 @@
+from ast import Try
 import pygame
 import os
 import math
 import sys
 import neat
+import pdb
 
-SCREEN_WIDTH = 1080
+SCREEN_WIDTH = 1244
 SCREEN_HEIGHT = 1016
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-TRACK = pygame.image.load(os.path.join( "./Piste_image (1).png"))
+TRACK = pygame.image.load(os.path.join( "./Piste_image_2.png"))
 
 
 class Vehicle(pygame.sprite.Sprite):
@@ -16,7 +18,7 @@ class Vehicle(pygame.sprite.Sprite):
         super().__init__()
         self.orignial_image = pygame.image.load(os.path.join("./car-outline-15.png"))
         self.image = self.orignial_image
-        self.rect = self.image.get_rect(center=(490, 820))
+        self.rect = self.image.get_rect(center=(505, 870))
         # self.drive_state = False
         self.vel_vector = pygame.math.Vector2(0.8, 0)
         self.angle = 0
@@ -24,6 +26,7 @@ class Vehicle(pygame.sprite.Sprite):
         self.direction = 0
         self.alive = True
         self.radars = []
+        
 
     def update(self):
         self.radars.clear()
@@ -42,11 +45,13 @@ class Vehicle(pygame.sprite.Sprite):
                                 int(self.rect.center[1] - math.sin(math.radians(self.angle - 18)) * length)]
 
         # Die on Collision
-        if SCREEN.get_at(collision_point_right) == pygame.Color(0, 153, 0, 255) \
-                or SCREEN.get_at(collision_point_left) == pygame.Color(0, 153, 0, 255):
-            self.alive = False
+        try:
+            if SCREEN.get_at(collision_point_right) == pygame.Color(0, 153, 0, 255) \
+                    or SCREEN.get_at(collision_point_left) == pygame.Color(0, 153, 0, 255):
+                self.alive = False
             # print("car is dead")
-
+        except:
+                pass
         #Draw collision Points 
 
         # pygame.draw.circle(SCREEN(0,255,255,0), collision_point_right, 4)
@@ -68,11 +73,13 @@ class Vehicle(pygame.sprite.Sprite):
         x = int(self.rect.center[0])
         y = int(self.rect.center[1])
 
-        while not SCREEN.get_at((x, y)) == pygame.Color(0, 153, 0, 255) and length < 100:
-            length += 1
-            x = int(self.rect.center[0] + math.cos(math.radians(self.angle + radar_angle)) * length)
-            y = int(self.rect.center[1] - math.sin(math.radians(self.angle + radar_angle)) * length)
-
+        try:
+            while not SCREEN.get_at((x, y)) == pygame.Color(0, 153, 0, 255) and length < 200:
+                length += 1
+                x = int(self.rect.center[0] + math.cos(math.radians(self.angle + radar_angle)) * length)
+                y = int(self.rect.center[1] - math.sin(math.radians(self.angle + radar_angle)) * length)
+        except:
+                pass
         # Draw Radar
         pygame.draw.line(SCREEN, (255, 255, 255, 255), self.rect.center, (x, y), 1)
         pygame.draw.circle(SCREEN, (0, 255, 0, 0), (x, y), 3)
