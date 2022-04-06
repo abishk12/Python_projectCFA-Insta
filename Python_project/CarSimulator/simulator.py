@@ -4,19 +4,19 @@ import math
 import sys
 import neat
 
-SCREEN_WIDTH = 1058
-SCREEN_HEIGHT = 794
+SCREEN_WIDTH = 1080
+SCREEN_HEIGHT = 1016
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-TRACK = pygame.image.load(os.path.join( "./Piste_image.png"))
+TRACK = pygame.image.load(os.path.join( "./Piste_image (1).png"))
 
 
 class Vehicle(pygame.sprite.Sprite):
     def __init__(self) :
         super().__init__()
-        self.orignial_image = pygame.image.load(os.path.join("./car.png"))
+        self.orignial_image = pygame.image.load(os.path.join("./car-outline-15.png"))
         self.image = self.orignial_image
-        self.rect = self.image.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT-100))
+        self.rect = self.image.get_rect(center=(490, 820))
         # self.drive_state = False
         self.vel_vector = pygame.math.Vector2(0.8, 0)
         self.angle = 0
@@ -29,7 +29,7 @@ class Vehicle(pygame.sprite.Sprite):
         self.radars.clear()
         self.drive()
         self.rotate()
-        for radar_angle in (-60, -30, 0, 30, 60):
+        for radar_angle in (0, 330, 0, 30, 60):
             self.radar(radar_angle)
         self.collision()
         self.data()
@@ -45,26 +45,42 @@ class Vehicle(pygame.sprite.Sprite):
         if SCREEN.get_at(collision_point_right) == pygame.Color(0, 153, 0, 255) \
                 or SCREEN.get_at(collision_point_left) == pygame.Color(0, 153, 0, 255):
             self.alive = False
-            print("car is dead")
+            # print("car is dead")
 
         #Draw collision Points 
 
         # pygame.draw.circle(SCREEN(0,255,255,0), collision_point_right, 4)
         # pygame.draw.circle(SCREEN(0,255,255,0), collision_point_left, 4)
+    
+    def rotate(self):
+        if self.direction == 1:
+            self.angle -= self.rotation_vel
+            self.vel_vector.rotate_ip(self.rotation_vel)
+        if self.direction == -1:
+            self.angle += self.rotation_vel
+            self.vel_vector.rotate_ip(-self.rotation_vel)
+
+        self.image = pygame.transform.rotozoom(self.orignial_image, self.angle, 0.1)
+        self.rect = self.image.get_rect(center=self.rect.center)
 
     def radar(self, radar_angle):
         length = 0
         x = int(self.rect.center[0])
         y = int(self.rect.center[1])
-        
+
         while not SCREEN.get_at((x, y)) == pygame.Color(0, 153, 0, 255) and length < 100:
             length += 1
             x = int(self.rect.center[0] + math.cos(math.radians(self.angle + radar_angle)) * length)
-            y = int(self.rect.center[1] - math.sin(math.radians(self.angle + radar_angle )) * length)
+            y = int(self.rect.center[1] - math.sin(math.radians(self.angle + radar_angle)) * length)
 
-        #Draw Radar
-        pygame.draw.line(SCREEN, (255,255,255,255), self.rect.center,(x,y), 1)
-        pygame.draw.circle(SCREEN, (0, 255, 0, 0), (x, y), 3 )
+        # Draw Radar
+        pygame.draw.line(SCREEN, (255, 255, 255, 255), self.rect.center, (x, y), 1)
+        pygame.draw.circle(SCREEN, (0, 255, 0, 0), (x, y), 3)
+
+        dist = int(math.sqrt(math.pow(self.rect.center[0] - x, 2)
+                             + math.pow(self.rect.center[1] - y, 2)))
+
+        self.radars.append([radar_angle, dist])
 
     def data(self):
         input = [0, 0, 0, 0, 0]
@@ -76,17 +92,6 @@ class Vehicle(pygame.sprite.Sprite):
     def drive(self):
         # if self.drive_state:
             self.rect.center += self.vel_vector * 6
-    
-    def rotate(self):
-        if self.direction == 1:
-            self.angle -= self.rotation_vel
-            self.vel_vector.rotate_ip(self.rotation_vel)
-        if self.direction == -1:
-            self.angle += self.rotation_vel
-            self.vel_vector.rotate_ip(-self.rotation_vel)
-
-        self.image = pygame.transform.rotozoom(self.orignial_image, self.angle, 0.09)
-        self.rect = self.image.get_rect(center=self.rect.center)
 
 #vehicle = pygame.sprite.GroupSingle(Vehicle())
 def remove(index):
